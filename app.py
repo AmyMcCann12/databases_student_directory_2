@@ -1,18 +1,17 @@
 from lib.database_connection import DatabaseConnection
-from lib.book_repository import BookRepository
+from lib.cohort_repository import CohortRepository
 
+class Application():
+    def __init__(self):
+        self._connection = DatabaseConnection()
+        self._connection.connect()
+        self._connection.seed("seeds/student_directory_2.sql")
 
-# Connect to the database
-connection = DatabaseConnection()
-connection.connect()
+    def run(self):
+        cohort = CohortRepository(self._connection)
+        result = cohort.find_with_students(4)
+        print(f"Cohort ID: {result.id} \nCohort Name: {result.name}\nCohort Start Date: {result.starting_date}\nStudents: {result.students}")
 
-# Seed with some seed data
-connection.seed("seeds/book_store.sql")
-
-# Retrieve all books
-book_repository = BookRepository(connection)
-books = book_repository.all()
-
-# List them out
-for book in books:
-    print(book)
+if __name__ == '__main__':
+    app = Application()
+    app.run()
